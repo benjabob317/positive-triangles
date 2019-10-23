@@ -66,7 +66,7 @@ def generate_triangles(n):
             else:
                 adjacencies[i].append(1)
 
-def check_triangles(move):
+def check_triangles(): # used to update scores
     filled_triangles = []
     global p1_score
     global p2_score
@@ -80,8 +80,15 @@ def check_triangles(move):
                     sign_counter += 1
         if counter == 3:
             filled_triangles.append([max([i[2] for i in triangles[x]]), sign_counter])
-    print(filled_triangles)
 
+    p1_score = 0
+    p2_score = 0
+    for x in filled_triangles:
+        if x[1] == 1 or x[1] == 3:
+            if moves[x[0] - 1][3] == 1:
+                p1_score += 1
+            if moves[x[0] - 1][3] == 2:
+                p2_score += 1
 
 generate_triangles(int(input("Complete graph on how many vertices? > ")))
 window = tkinter.Tk()
@@ -98,6 +105,7 @@ for i in range(0, num):
     for j in range(0, num):
         lines[i][j] = w.create_line(400+300*math.cos(2*math.pi*i/num), 400+300*math.sin(2*math.pi*i/num), 400+300*math.cos(2*math.pi*j/num), 400+300*math.sin(2*math.pi*j/num), fill="blue", width=5)
 
+scoreboard = w.create_text(100, 50, fill="black", font="Times 20 bold", text=f"P1 score: {p1_score}\nP2 score: {p2_score}")
 
 current_player = 1
 
@@ -132,9 +140,13 @@ def move(v1, v2, sign, player):
         else:
             current_player = 1
     else: 
-        print("This edge has already been moved on")
+        print("Invalid move!")
 
 while True:
-    check_triangles(current_move)
-    move(int(input(f"Player {current_player}, select v1 > ")), int(input(f"Player {current_player}, select v2 > ")), input(f"Player {current_player}, select a sign (+ or -) > "), current_player)
+    try:
+        move(int(input(f"Player {current_player}, select v1 > ")), int(input(f"Player {current_player}, select v2 > ")), input(f"Player {current_player}, select a sign (+ or -) > "), current_player)
+        check_triangles()
+        w.itemconfig(scoreboard, text=f"P1 score: {p1_score}\nP2 score: {p2_score}")
+    except ValueError:
+        pass
     print()
