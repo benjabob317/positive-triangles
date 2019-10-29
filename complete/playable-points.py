@@ -103,7 +103,8 @@ for x in range(0, num):
     w.create_text(400+350*math.cos(2*math.pi*x/num), 400+350*math.sin(2*math.pi*x/num),fill="black",font="Times 20 bold", text=f"{x}")
 for i in range(0, num):
     for j in range(0, num):
-        lines[i][j] = w.create_line(400+300*math.cos(2*math.pi*i/num), 400+300*math.sin(2*math.pi*i/num), 400+300*math.cos(2*math.pi*j/num), 400+300*math.sin(2*math.pi*j/num), fill="blue", width=5)
+        if adjacencies[i][j] != 0:
+            lines[i][j] = w.create_line(400+300*math.cos(2*math.pi*i/num), 400+300*math.sin(2*math.pi*i/num), 400+300*math.cos(2*math.pi*j/num), 400+300*math.sin(2*math.pi*j/num), fill="blue", width=5)
 
 scoreboard = w.create_text(100, 50, fill="black", font="Times 20 bold", text=f"P1 score: {p1_score}\nP2 score: {p2_score}")
 
