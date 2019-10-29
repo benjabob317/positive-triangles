@@ -8,6 +8,8 @@ current_move = 1
 p1_score = 0
 p2_score = 0
 
+current_player = 1
+
 adjacencies = [
     [0, 1, 1, 1, 1],
     [1, 0, 1, 1, 1],
@@ -105,9 +107,7 @@ for i in range(0, num):
     for j in range(0, num):
         lines[i][j] = w.create_line(400+300*math.cos(2*math.pi*i/num), 400+300*math.sin(2*math.pi*i/num), 400+300*math.cos(2*math.pi*j/num), 400+300*math.sin(2*math.pi*j/num), fill="blue", width=5)
 
-scoreboard = w.create_text(100, 50, fill="black", font="Times 20 bold", text=f"P1 score: {p1_score}\nP2 score: {p2_score}")
-
-current_player = 1
+scoreboard = w.create_text(100, 70, fill="black", font="Times 20 bold", text=f"{current_move} edges marked\n\nPlayer {current_player} is up!")
 
 def move(v1, v2, sign, player):
     global moves
@@ -140,22 +140,40 @@ def move(v1, v2, sign, player):
         else:
             current_player = 1
     else: 
-        print("Invalid move!")
+        print(f"{v1, v2} is an invalid move!")
 
 import time
-time.sleep(1)
-while True:
-    v1 = math.floor(random.random()*num)
-    v2 = math.floor(random.random()*num)
-    sign = random.random()
-    if sign > .5:
-        sign = '+'
-    else:
-        sign = '-'
 
-    move(int(v1), int(v2), sign, current_player)
-    check_triangles()
-    w.itemconfig(scoreboard, text=f"P1 score: {p1_score}\nP2 score: {p2_score}")
-    print()
-    time.sleep(.5)
-    w.update()
+delay = float(input("Delay between each move? (in seconds) > "))
+positive_chance = float(input("Chance to mark an edge positive? (0-1) > "))
+
+time.sleep(1)
+while p1_score == 0 and p2_score == 0: #ends the loop once a triangle has been made
+    if p1_score == 0 and p2_score == 0:
+        w.itemconfig(scoreboard, text=f"{current_move - 1} edges marked\n\nPlayer {current_player} is up!")
+        previous_edges = [x[0:2] for x in moves]
+        v1 = math.floor(random.random()*num)
+        v2 = math.floor(random.random()*num)
+        vertices = [v1, v2]
+        v1 = min(vertices)
+        v2 = max(vertices)
+        while [v1, v2] in previous_edges or v1 == v2: #deals with invalid moves
+            v1 = math.floor(random.random()*num)
+            v2 = math.floor(random.random()*num)
+            vertices = [v1, v2]
+            v1 = min(vertices)
+            v2 = max(vertices)
+        sign = random.random()
+        if sign < positive_chance:
+            sign = '+'
+        else:
+            sign = '-'
+
+        move(int(v1), int(v2), sign, current_player)
+        check_triangles()
+        time.sleep(delay)
+        w.itemconfig(scoreboard, text=f"{current_move - 1} edges marked\n\nPlayer {current_player} is up!")
+        w.update()
+w.itemconfig(scoreboard, text=f"{current_move - 1} edges marked\n\nPlayer {2 - (len(moves) % 2)} won!\n\nGame over!")
+w.update()
+time.sleep(10)
