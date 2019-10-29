@@ -194,12 +194,17 @@ positive_chance = float(input("Chance to mark an edge positive? (0-1) > "))
 
 time.sleep(1)
 while len(moves) < num*(num-1)/2: #ends the loop once all possible moves have been made
-    print(safe_moves())
-    print(scoring_moves())
     w.itemconfig(scoreboard, text=f"{current_move - 1} edges marked\n\nP1 score: {p1_score}\nP2 score: {p2_score}\n\nPlayer {current_player} is up!")
     
     if len(scoring_moves()) > 0:
-        next_move = random.choice(scoring_moves())
+        scoring_move_occurances = []
+        for x in scoring_moves():
+            scoring_move_occurances.append(scoring_moves().count(x))
+        optimal_scoring_moves = []
+        for i in range(0, len(scoring_move_occurances)):
+            if scoring_move_occurances[i] == max(scoring_move_occurances):
+                optimal_scoring_moves.append(scoring_moves()[i])       
+        next_move = random.choice(optimal_scoring_moves)
         v1 = next_move[0]
         v2 = next_move[1]
         sign = next_move[2]
